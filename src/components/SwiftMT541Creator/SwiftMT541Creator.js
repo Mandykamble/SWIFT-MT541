@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import './SwiftForm.css';
 import Navbar from './Navbar/Navbar'
+import TradeDetailsSection from './TradeDetails/TradeDetailsSection';
+import GeneralInformationSection from './GeneralInfo/GeneralInformationSection';
+import LinkagesSection from './Linkage/LinkagesSection';
+
+import FinancialInstrumentAccountSection from './FIAC/FinancialInstrumentAccountSection';
 
 const SwiftMT541Creator = () => {
   // State for form data
   const [formData, setFormData] = useState({
-    // General Information (Sequence A)
-    senderReference: '',
-    functionOfMessage: '',
-    prepDateTime: '',
-    numberCount: '',
     // Linkages (Subsequence A1)
     linkIndicator: '',
     linkedMessage: '',
@@ -79,18 +79,19 @@ const SwiftMT541Creator = () => {
     numberCountOption: '',
     numberCountValue: '',
     numberCountQualifier: '',
-    linkIndicator: '',
   linkedMessageOption: '',
   linkedMessageQualifier: '',
   linkedMessageDataSource: '',
   linkedMessageNumber: '',
   linkedReferenceOption: '',
   linkedReferenceQualifier: '',
-  linkedReferenceValue: '',
   linkageQuantityOption: '',
   linkageQuantityQualifier: '',
   linkageQuantityType: '',
   linkageQuantityValue: '',
+  linkedReferenceValue: '',
+    quantityType: '',
+    quantityValue: ''
   });
 
   // State for errors
@@ -219,6 +220,61 @@ const handleDateTimeChange = (e) => {
     return error;
   };
 
+  const validateLinkIndicator = (value) => {
+    const regex = /^[A-Z0-9]{4}\/[A-Z0-9]{0,8}\/[A-Z0-9]{4}$/;
+    if (!value) return '';
+    if (!regex.test(value)) return 'Format must be 4!c/[8c]/4!c';
+    return '';
+  };
+
+  const validateLinkedMessage = (option, value) => {
+    if (!option) return '';
+    if (!value) return 'Number identification is required';
+    
+    switch (option) {
+      case 'A':
+        return /^\d{3}$/.test(value) ? '' : 'Must be 3 digits for option A';
+      case 'B':
+        return /^[A-Z0-9]{1,30}$/.test(value) ? '' : 'Must be up to 30 characters for option B';
+      default:
+        return 'Invalid option';
+    }
+  };
+
+  const validateLinkedReference = (option, value) => {
+    if (!option) return '';
+    if (!value) return 'Reference is required';
+    
+    switch (option) {
+      case 'C':
+        return /^[A-Z0-9]{1,16}$/.test(value) ? '' : 'Must be up to 16 characters';
+      case 'U':
+        return /^[A-Z0-9]{1,52}$/.test(value) ? '' : 'Must be up to 52 characters';
+      default:
+        return 'Invalid option';
+    }
+  };
+
+  const validateQuantity = (option, type, value) => {
+    if (!option || !type) return '';
+    if (!value) return 'Quantity is required';
+    
+    const quantityTypeRegex = /^[A-Z]{4}$/;
+    if (!quantityTypeRegex.test(type)) {
+      return 'Quantity type must be 4 uppercase letters';
+    }
+
+    switch (option) {
+      case 'B':
+        return /^\d{1,15}(\.\d{0,2})?$/.test(value) ? '' : 'Invalid quantity format for option B';
+      case 'D':
+        return /^\d{1,30}(\.\d{0,2})?$/.test(value) ? '' : 'Invalid quantity format for option D';
+      default:
+        return 'Invalid option';
+    }
+  };
+
+
   // Handle input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -235,6 +291,38 @@ const handleDateTimeChange = (e) => {
       [name]: error,
     }));
   };
+
+  const handleLinkageChange = (e) => {
+    const { name, value } = e.target;
+    let error = '';
+
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+
+    switch (name) {
+      case 'linkIndicator':
+        error = validateLinkIndicator(value);
+        break;
+      case 'linkedMessageNumber':
+        error = validateLinkedMessage(formData.linkedMessage, value);
+        break;
+      case 'linkedReferenceValue':
+        error = validateLinkedReference(formData.linkedReference, value);
+        break;
+      case 'quantityValue':
+        error = validateQuantity(formData.quantityType, value);
+        break;
+    }
+
+    setErrors(prev => ({
+      ...prev,
+      [name]: error
+    }));
+  };
+
+
 
   // Get validation pattern based on Content/Options
   const getValidationPattern = (fieldName) => {
@@ -360,21 +448,17 @@ const handleDateTimeChange = (e) => {
       case 'linkedMessageQualifier':
       case 'linkedReferenceQualifier':
       case 'linkageQuantityQualifier':
-            return '^[A-Z]{4}$'; // 4!c
-          
+        return '^[A-Z]{4}$'; // 4!c
       case 'linkedMessageNumber':
         return formData.linkedMessageOption === "A"
           ? '^[A-Z0-9]{3}$' // 3!c
           : '^[A-Z0-9]{1,30}$'; // 30x
-          
-          case 'linkedReferenceValue':
-            return formData.linkedReferenceOption === "C"
+      case 'linkedReferenceValue':
+        return formData.linkedReferenceOption === "C"
           ? '^[A-Z0-9]{16}$' // 16x
           : '^[A-Z0-9]{52}$'; // 52x
-          
       case 'linkageQuantityType':
         return '^[A-Z0-9]{4}$'; // 4!c
-          
       case 'linkageQuantityValue':
         return formData.linkageQuantityOption === "B"
           ? '^[0-9]{1,15}(\\.[0-9]{1,2})?$' // 15d
@@ -386,18 +470,7 @@ const handleDateTimeChange = (e) => {
 
   ///**************** */
 
-  const getDateTime98APattern = (option) => {
-    switch (option) {
-      case 'A':
-        return '^[0-9]{8}$'; // Basic date format YYYYMMDD
-      case 'C':
-        return '^[0-9]{8}[0-9]{6}$'; // Date + Time YYYYMMDD + HHMMSS
-      case 'E':
-        return '^[0-9]{8}[0-9]{6}(,[0-9]{3})?(\/[N]?[0-9]{2}([0-9]{2})?)?$'; // Full format with optional decimals and UTC
-      default:
-        return null;
-    }
-  };
+ 
 
   const handleQualifierChange = (e) => {
     const qualifier = e.target.value;
@@ -676,331 +749,21 @@ const handleDateTimeChange = (e) => {
       <h1>SWIFT MT541 Message Generator</h1>
       <form onSubmit={handleSubmit} className="swift-form">
         {/* General Information (Sequence A) */}
-        <div className="form-section">
-          <h2>General Information</h2>
-          <div className="form-row">
-            <div className="form-group">
-              <label>Sender Reference *:</label>
-              <input
-                type="text"
-                name="senderReference"
-                value={formData.senderReference}
-                onChange={handleInputChange}
-                required
-              />
-              {errors.senderReference && <span className="error">{errors.senderReference}</span>}
-            </div>
-            <div className="form-group">
-              <label>Function of the Message *:</label>
-              <input
-                type="text"
-                name="functionOfMessage"
-                value={formData.functionOfMessage}
-                onChange={handleInputChange}
-                required
-              />
-              {errors.functionOfMessage && <span className="error">{errors.functionOfMessage}</span>}
-            </div>
-            <div className="form-group">
-      <label className="block mb-2 font-medium">Preparation Date/Time:</label>
-      <div className="flex flex-col gap-2">
-        <select
-          className="w-full p-2 border rounded"
-          value={formData.prepDateTime}
-          onChange={handleOptionChange}
-        >
-          <option value="">Select format</option>
-          <option value="A">A - Date only (YYYYMMDD)</option>
-          <option value="C">C - Date and Time (YYYYMMDDHHMMSS)</option>
-          <option value="E">E - Extended Format</option>
-        </select>
         
-        {formData.prepDateTime && (
-          <input
-            type="text"
-            className="w-full p-2 border rounded"
-            value={dateTimeInput}
-            onChange={handleDateTimeChange}
-            placeholder={
-              formData.prepDateTime === 'A' ? 'YYYYMMDD' :
-              formData.prepDateTime === 'C' ? 'YYYYMMDDHHMMSS' :
-              'YYYYMMDDHHMMSS[,3n][/[N]2!n[2!n]]'
-            }
-          />
-        )}
         
-        {errors.prepDateTime && (
-          <span className="text-red-500 text-sm">{errors.prepDateTime}</span>
-        )}
+      <GeneralInformationSection></GeneralInformationSection>
+          
+          
         
-        {formData.prepDateTimeValue && !errors.prepDateTime && (
-          <span className="text-green-500 text-sm">Valid format</span>
-        )}
-      </div>
-    </div>
-    <div className="form-group">
-      <label className="block mb-2 font-medium">Number Count:</label>
-      <div className="flex flex-col gap-2">
-        <select
-          className="w-full p-2 border rounded"
-          value={formData.numberCountOption}
-          onChange={handleOptionChangeNumberCount}
-        >
-          <option value="">Select format</option>
-          <option value="B">B - 3 digits</option>
-          <option value="C">C - 6 digits</option>
-        </select>
-        
-        {formData.numberCountOption && (
-          <>
-            <select
-              className="w-full p-2 border rounded"
-              value={formData.numberCountQualifier}
-              onChange={handleQualifierChange}
-            >
-              <option value="">Select qualifier</option>
-              {Object.entries(qualifiers).map(([code, description]) => (
-                <option key={code} value={code}>
-                  {code} - {description}
-                </option>
-              ))}
-            </select>
-            
-            <input
-              type="text"
-              className="w-full p-2 border rounded"
-              value={numberInput}
-              onChange={handleNumberChange}
-              placeholder={
-                formData.numberCountOption === 'B' ? 'Enter 3 digits' :
-                'Enter 6 digits'
-              }
-              maxLength={formData.numberCountOption === 'B' ? 3 : 6}
-            />
-          </>
-        )}
-        
-        {errors.numberCount && (
-          <span className="text-red-500 text-sm">{errors.numberCount}</span>
-        )}
-        
-        {formData.numberCountValue && !errors.numberCount && (
-          <span className="text-green-500 text-sm">
-            Valid format: {getFormattedValue()}
-          </span>
-        )}
-      </div>
-    </div>
-          </div>
-        </div>
-
+{/* ---------------------------------------------------------->>>>>>>>>>>>>>>>>>>>>>
        {/* Linkages (Subsequence A1) */}
-<div className="form-section">
-  <label>
-    <input
-      type="checkbox"
-      checked={showLinkages}
-      onChange={() => setShowLinkages(!showLinkages)}
-    />
-    Include Linkages
-  </label>
 
-  {showLinkages && (
-    <div className="form-row">
-      <div className="form-group">
-        <label>Link Indicator:</label>
-        <input
-          type="text"
-          name="linkIndicator"
-          value={formData.linkIndicator}
-          onChange={handleInputChange}
-          placeholder="e.g., LINK/12345678/LINK"
-        />
-      </div>
+      
+        <LinkagesSection></LinkagesSection>
 
-      {/* Linked Message (13a) */}
-      <div className="form-group">
-        <label>Linked Message:</label>
-        <select
-          name="linkedMessageOption"
-          value={formData.linkedMessageOption}
-          onChange={handleInputChange}
-        >
-          <option value="">Select Format</option>
-          <option value="A">Option A - :4!c//3!c</option>
-          <option value="B">Option B - :4!c/[8c]/30x</option>
-        </select>
-        {formData.linkedMessageOption && (
-          <>
-            <input
-              type="text"
-              name="linkedMessageQualifier"
-              value={formData.linkedMessageQualifier}
-              onChange={handleInputChange}
-              placeholder="Qualifier (e.g., LINK)"
-            />
-            {formData.linkedMessageOption === "B" && (
-              <input
-                type="text"
-                name="linkedMessageDataSource"
-                value={formData.linkedMessageDataSource}
-                onChange={handleInputChange}
-                placeholder="Data Source Scheme (Optional)"
-              />
-            )}
-            <input
-              type="text"
-              name="linkedMessageNumber"
-              value={formData.linkedMessageNumber}
-              onChange={handleInputChange}
-              placeholder="Message Number (3 or 30 chars)"
-            />
-          </>
-        )}
-      </div>
+  {/* {/->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */}
 
-      {/* Linked Reference (20a) */}
-      <div className="form-group">
-        <label>Linked Reference:</label>
-        <select
-          name="linkedReferenceOption"
-          value={formData.linkedReferenceOption}
-          onChange={handleInputChange}
-        >
-          <option value="">Select Format</option>
-          <option value="C">Option C - :4!c//16x</option>
-          <option value="U">Option U - :4!c//52x</option>
-        </select>
-        {formData.linkedReferenceOption && (
-          <>
-            <input
-              type="text"
-              name="linkedReferenceQualifier"
-              value={formData.linkedReferenceQualifier}
-              onChange={handleInputChange}
-              placeholder="Qualifier (e.g., LINK)"
-            />
-            <input
-              type="text"
-              name="linkedReferenceValue"
-              value={formData.linkedReferenceValue}
-              onChange={handleInputChange}
-              placeholder="Reference (16 or 52 chars)"
-            />
-          </>
-        )}
-      </div>
-
-      {/* Linkage Quantity (36a) */}
-      <div className="form-group">
-        <label>Linkage Quantity:</label>
-        <select
-          name="linkageQuantityOption"
-          value={formData.linkageQuantityOption}
-          onChange={handleInputChange}
-        >
-          <option value="">Select Format</option>
-          <option value="B">Option B - :4!c//4!c/15d</option>
-          <option value="D">Option D - :4!c//4!c/30d</option>
-        </select>
-        {formData.linkageQuantityOption && (
-          <>
-            <input
-              type="text"
-              name="linkageQuantityQualifier"
-              value={formData.linkageQuantityQualifier}
-              onChange={handleInputChange}
-              placeholder="Qualifier (e.g., LINK)"
-            />
-            <input
-              type="text"
-              name="linkageQuantityType"
-              value={formData.linkageQuantityType}
-              onChange={handleInputChange}
-              placeholder="Quantity Type Code (4 chars)"
-            />
-            <input
-              type="text"
-              name="linkageQuantityValue"
-              value={formData.linkageQuantityValue}
-              onChange={handleInputChange}
-              placeholder="Quantity (15 or 30 digits)"
-            />
-          </>
-        )}
-      </div>
-    </div>
-  )}
-</div>
-
-
-        {/* Trade Details (Sequence B) */}
-        <div className="form-section">
-          <h2>Trade Details</h2>
-          <div className="form-row">
-            <div className="form-group">
-              <label>Place:</label>
-              <select
-                name="place"
-                value={formData.place}
-                onChange={handleInputChange}
-              >
-                <option value="">Select</option>
-                <option value="B">B</option>
-                <option value="H">H</option>
-                <option value="L">L</option>
-              </select>
-            </div>
-            <div className="form-group">
-              <label>Trade Date/Time *:</label>
-              <select
-                name="tradeDateTime"
-                value={formData.tradeDateTime}
-                onChange={handleInputChange}
-                required
-              >
-                <option value="">Select</option>
-                <option value="A">A</option>
-                <option value="B">B</option>
-                <option value="C">C</option>
-                <option value="E">E</option>
-              </select>
-              {errors.tradeDateTime && <span className="error">{errors.tradeDateTime}</span>}
-            </div>
-            <div className="form-group">
-              <label>Deal Price:</label>
-              <select
-                name="dealPrice"
-                value={formData.dealPrice}
-                onChange={handleInputChange}
-              >
-                <option value="">Select</option>
-                <option value="A">A</option>
-                <option value="B">B</option>
-              </select>
-            </div>
-            <div className="form-group">
-              <label>Days Accrued:</label>
-              <input
-                type="text"
-                name="daysAccrued"
-                value={formData.daysAccrued}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className="form-group">
-              <label>ISIN *:</label>
-              <input
-                type="text"
-                name="isin"
-                value={formData.isin}
-                onChange={handleInputChange}
-                required
-              />
-              {errors.isin && <span className="error">{errors.isin}</span>}
-            </div>
-          </div>
-        </div>
+ <TradeDetailsSection></TradeDetailsSection>
 
         {/* Financial Instrument Attributes (Subsequence B1) */}
         <div className="form-section">
@@ -1128,84 +891,8 @@ const handleDateTimeChange = (e) => {
         </div>
 
         {/* Financial Instrument/Account (Sequence C) */}
-        <div className="form-section">
-          <h2>Financial Instrument/Account</h2>
-          <div className="form-row">
-            <div className="form-group">
-              <label>Settlement Quantity *:</label>
-              <select
-                name="settlementQuantity"
-                value={formData.settlementQuantity}
-                onChange={handleInputChange}
-                required
-              >
-                <option value="">Select</option>
-                <option value="B">B</option>
-                <option value="D">D</option>
-              </select>
-            </div>
-            <div className="form-group">
-              <label>Denomination Narrative:</label>
-              <input
-                type="text"
-                name="denominationNarrative"
-                value={formData.denominationNarrative}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className="form-group">
-              <label>Certificate Identification:</label>
-              <input
-                type="text"
-                name="certificateIdentification"
-                value={formData.certificateIdentification}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className="form-group">
-              <label>Party:</label>
-              <select
-                name="party"
-                value={formData.party}
-                onChange={handleInputChange}
-              >
-                <option value="">Select</option>
-                <option value="L">L</option>
-                <option value="P">P</option>
-                <option value="R">R</option>
-              </select>
-            </div>
-            <div className="form-group">
-              <label>Account *:</label>
-              <select
-                name="account"
-                value={formData.account}
-                onChange={handleInputChange}
-                required
-              >
-                <option value="">Select</option>
-                <option value="A">A</option>
-                <option value="B">B</option>
-                <option value="D">D</option>
-                <option value="E">E</option>
-              </select>
-            </div>
-            <div className="form-group">
-              <label>Place of Safekeeping:</label>
-              <select
-                name="placeOfSafekeeping"
-                value={formData.placeOfSafekeeping}
-                onChange={handleInputChange}
-              >
-                <option value="">Select</option>
-                <option value="B">B</option>
-                <option value="C">C</option>
-                <option value="F">F</option>
-                <option value="L">L</option>
-              </select>
-            </div>
-          </div>
-        </div>
+        
+        <FinancialInstrumentAccountSection></FinancialInstrumentAccountSection>
 
         {/* Quantity Breakdown (Subsequence C1) */}
         <div className="form-section">
