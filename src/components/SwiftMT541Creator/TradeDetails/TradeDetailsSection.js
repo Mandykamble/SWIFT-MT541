@@ -22,19 +22,26 @@ const TradeDetailsSection = () => {
 
   // Validation Functions
   const validatePlace = (option, qualifier, code, dataSource, identifier, narrative) => {
-    if (!option || !qualifier) return 'Qualifier is required';
+    if (!option) return 'Place option is required';
 
     switch (option) {
-      case 'B':
-        return /^[A-Z]{4}(\/[A-Z0-9]{0,8})?\/[A-Z0-9]{4}(\/[A-Z0-9]{0,30})?$/.test(`${qualifier}/${dataSource}/${code}${narrative ? '/' + narrative : ''}`)
+      case 'B': // Place of Trade
+        return /^[A-Z]{4}(\/[A-Z0-9]{0,8})?\/[A-Z0-9]{4}(\/[A-Z0-9]{0,30})?$/.test(
+          `${qualifier}/${dataSource}/${code}${narrative ? '/' + narrative : ''}`
+        )
           ? ''
           : 'Invalid format for Option B';
-      case 'H':
+
+      case 'H': // Place of Clearing (Identifier Code)
         return /^[A-Z]{4}\/\/[A-Z]{4}[A-Z0-9]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/.test(identifier)
           ? ''
           : 'Invalid format for Option H';
-      case 'L':
-        return /^[A-Z]{4}\/\/[A-Z0-9]{18}[0-9]{2}$/.test(identifier) ? '' : 'Invalid format for Option L';
+
+      case 'L': // Legal Entity Identifier
+        return /^[A-Z]{4}\/\/[A-Z0-9]{18}[0-9]{2}$/.test(identifier)
+          ? ''
+          : 'Invalid format for Option L';
+
       default:
         return 'Invalid place option';
     }
@@ -89,6 +96,7 @@ const TradeDetailsSection = () => {
     }));
 
     switch (name) {
+      case 'placeOption':
       case 'placeQualifier':
       case 'placeCode':
       case 'placeDataSource':
@@ -133,12 +141,32 @@ const TradeDetailsSection = () => {
         <label>Place:</label>
         <select name="placeOption" value={formData.placeOption} onChange={handleInputChange}>
           <option value="">Select</option>
-          <option value="B">Option B - Place of Trade</option>
-          <option value="H">Option H - Place of Clearing</option>
-          <option value="L">Option L - Legal Entity Identifier</option>
+          <option value="B">B - Place of Trade</option>
+          <option value="H">H - Place of Clearing</option>
+          <option value="L">L - Legal Entity Identifier</option>
         </select>
+
+        {/* Dynamic Fields Based on Selection */}
+        {formData.placeOption === 'B' && (
+          <>
+            <input type="text" name="placeQualifier" value={formData.placeQualifier} onChange={handleInputChange} placeholder="Qualifier (4!c)" />
+            <input type="text" name="placeDataSource" value={formData.placeDataSource} onChange={handleInputChange} placeholder="Data Source Scheme (8c)" />
+            <input type="text" name="placeCode" value={formData.placeCode} onChange={handleInputChange} placeholder="Place Code (4!c)" />
+            <input type="text" name="placeNarrative" value={formData.placeNarrative} onChange={handleInputChange} placeholder="Narrative (Optional)" />
+          </>
+        )}
+
+        {formData.placeOption === 'H' && (
+          <input type="text" name="placeIdentifier" value={formData.placeIdentifier} onChange={handleInputChange} placeholder="Identifier Code (4!a2!a2!c[3!c])" />
+        )}
+
+        {formData.placeOption === 'L' && (
+          <input type="text" name="placeIdentifier" value={formData.placeIdentifier} onChange={handleInputChange} placeholder="Legal Entity Identifier (18!c2!n)" />
+        )}
+
         {errors.placeOption && <span className="error">{errors.placeOption}</span>}
       </div>
+
 
       {/* Trade Date/Time */}
       <div className="form-group">

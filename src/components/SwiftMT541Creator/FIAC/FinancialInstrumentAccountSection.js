@@ -1,99 +1,78 @@
 import React, { useState } from 'react';
 
-const FinancialInstrumentAccountSection = () => {
+const FinancialInstrumentForm = () => {
   const [formData, setFormData] = useState({
-    // Mandatory Fields
-    financialQuantityOption: '',
-    financialQuantityQualifier: '',
-    financialQuantityType: '',
-    financialQuantityValue: '',
-    safekeepingAccountOption: '',
-    safekeepingAccountQualifier: '',
-    safekeepingAccountValue: '',
-
-    // Optional Fields
-    denominationNarrative: '',
+    startBlock: 'FIAC',
+    quantity: {
+      option: '',
+      qualifierType: '',
+      quantityValue: ''
+    },
+    narrativeDenomination: '',
     certificateNumber: '',
-    partyOption: '',
-    partyQualifier: '',
-    partyIdentifier: '',
-    accountOption: '',
-    accountQualifier: '',
-    accountTypeCode: '',
-    accountNumber: '',
-    placeOption: '',
-    placeQualifier: '',
-    placeDataSource: '',
-    placeCode: '',
-    placeNarrative: ''
+    party: {
+      option: '',
+      identifier: '',
+      dataSourceScheme: '',
+      proprietaryCode: ''
+    },
+    account: {
+      option: '',
+      accountNumber: '',
+      dataSourceScheme: '',
+      accountTypeCode: '',
+      blockchainId: '',
+      iban: ''
+    },
+    place: {
+      option: '',
+      dataSourceScheme: '',
+      placeCode: '',
+      narrative: '',
+      countryCode: '',
+      identifierCode: '',
+      lei: ''
+    }
   });
 
   const [errors, setErrors] = useState({});
 
   // Validation Functions
-  const validateQuantity = (option, qualifier, type, value) => {
-    if (!option || !qualifier || !type) return 'All fields are required for quantity';
-    if (!/^[A-Z]{4}$/.test(type)) return 'Quantity type must be 4 uppercase letters';
-
-    switch (option) {
-      case 'B':
-        return /^\d{1,15}(\.\d{0,2})?$/.test(value) ? '' : 'Invalid quantity format for option B';
-      case 'D':
-        return /^\d{1,30}(\.\d{0,2})?$/.test(value) ? '' : 'Invalid quantity format for option D';
-      default:
-        return 'Invalid quantity option';
-    }
+  const validateQuantityB = (value) => {
+    return /^[A-Z]{4}\/\/[A-Z]{4}\/\d{1,15}$/.test(value)
+      ? ''
+      : 'Format must be 4!c//4!c/15d';
   };
 
-  const validateParty = (option, value) => {
-    if (!option) return '';
-    switch (option) {
-      case 'L':
-        return /^[A-Z0-9]{18}[0-9]{2}$/.test(value) ? '' : 'Invalid format for Option L (LEI)';
-      case 'P':
-        return /^[A-Z]{4}[A-Z0-9]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/.test(value) ? '' : 'Invalid format for Option P';
-      case 'R':
-        return /^[A-Z0-9]{8,34}$/.test(value) ? '' : 'Invalid format for Option R';
-      default:
-        return 'Invalid party option';
-    }
+  const validateQuantityD = (value) => {
+    return /^[A-Z]{4}\/\/[A-Z]{4}\/\d{1,30}$/.test(value)
+      ? ''
+      : 'Format must be 4!c//4!c/30d';
+  };
+
+  const validateLEI = (value) => {
+    return /^[A-Z0-9]{18}\d{2}$/.test(value)
+      ? ''
+      : 'Must be 18 alphanumeric characters followed by 2 numbers';
+  };
+
+  const validateBIC = (value) => {
+    return /^[A-Z]{4}[A-Z]{2}[A-Z2-9][A-NP-Z0-9]([A-Z0-9]{3})?$/.test(value)
+      ? ''
+      : 'Invalid BIC format';
   };
 
   const validateAccount = (option, value) => {
     if (!option) return '';
+    if (!value) return 'Account information is required';
+
     switch (option) {
       case 'A':
-        return /^[A-Z0-9]{1,35}$/.test(value) ? '' : 'Invalid format for Option A';
-      case 'B':
-        return /^[A-Z0-9]{1,35}$/.test(value) ? '' : 'Invalid format for Option B';
-      case 'D':
-        return /^[A-Z0-9]{1,140}$/.test(value) ? '' : 'Invalid format for Option D';
+        return value.length <= 35 ? '' : 'Account number must not exceed 35 characters';
       case 'E':
-        return /^[A-Z0-9]{1,34}$/.test(value) ? '' : 'Invalid format for Option E';
+        return value.length <= 34 ? '' : 'IBAN must not exceed 34 characters';
       default:
-        return 'Invalid account option';
-    }
-  };
-
-  const validateCertificateNumber = (value) => {
-    return /^[A-Z0-9]{1,30}$/.test(value) ? '' : 'Certificate Number must be up to 30 characters';
-  };
-
-  const validateNarrative = (value) => {
-    return value.length <= 210 ? '' : 'Narrative must be up to 210 characters';
-  };
-
-  const validatePlace = (option, dataSource, code, narrative) => {
-    if (!option) return '';
-    switch (option) {
-      case 'B':
-        return /^[A-Z]{4}(\/[A-Z0-9]{0,8})?\/[A-Z0-9]{4}(\/[A-Z0-9]{0,30})?$/.test(`${dataSource}/${code}${narrative ? '/' + narrative : ''}`)
-          ? ''
-          : 'Invalid format for Option B';
-      case 'L':
-        return /^[A-Z0-9]{18}[0-9]{2}$/.test(code) ? '' : 'Invalid format for Option L (LEI)';
-      default:
-        return 'Invalid place option';
+        return '';
     }
   };
 
@@ -102,38 +81,37 @@ const FinancialInstrumentAccountSection = () => {
     const { name, value } = e.target;
     let error = '';
 
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData(prev => {
+      const updatedData = { ...prev };
+      const path = name.split('.');
+      
+      if (path.length === 1) {
+        updatedData[name] = value;
+      } else {
+        let current = updatedData;
+        for (let i = 0; i < path.length - 1; i++) {
+          current = current[path[i]];
+        }
+        current[path[path.length - 1]] = value;
+      }
+      
+      return updatedData;
+    });
 
-    switch (name) {
-      case 'financialQuantityValue':
-        error = validateQuantity(
-          formData.financialQuantityOption,
-          formData.financialQuantityQualifier,
-          formData.financialQuantityType,
-          value
-        );
-        break;
-      case 'partyIdentifier':
-        error = validateParty(formData.partyOption, value);
-        break;
-      case 'safekeepingAccountValue':
-        error = validateAccount(formData.safekeepingAccountOption, value);
-        break;
-      case 'certificateNumber':
-        error = validateCertificateNumber(value);
-        break;
-      case 'denominationNarrative':
-        error = validateNarrative(value);
-        break;
-      case 'placeCode':
-        error = validatePlace(formData.placeOption, formData.placeDataSource, value, formData.placeNarrative);
-        break;
+    // Validate based on field type
+    if (name === 'quantity.value') {
+      error = formData.quantity.option === 'B' 
+        ? validateQuantityB(value)
+        : validateQuantityD(value);
+    } else if (name === 'party.identifier') {
+      error = formData.party.option === 'L'
+        ? validateLEI(value)
+        : validateBIC(value);
+    } else if (name === 'account.value') {
+      error = validateAccount(formData.account.option, value);
     }
 
-    setErrors((prev) => ({
+    setErrors(prev => ({
       ...prev,
       [name]: error
     }));
@@ -141,51 +119,142 @@ const FinancialInstrumentAccountSection = () => {
 
   return (
     <div className="form-section">
+
       <h2>Financial Instrument/Account</h2>
 
-      {/* Quantity of Financial Instrument (Mandatory) */}
+      {/* Quantity (36a) */}
       <div className="form-group">
-        <label>Quantity of Financial Instrument *:</label>
-        <input type="text" name="financialQuantityValue" value={formData.financialQuantityValue} onChange={handleInputChange} />
-        {errors.financialQuantityValue && <span className="error">{errors.financialQuantityValue}</span>}
+        <label>Quantity of Financial Instrument (36a) *</label>
+        <select 
+          name="quantity.option"
+          value={formData.quantity.option}
+          onChange={handleInputChange}
+        >
+          <option value="">Select format option</option>
+          <option value="B">Option B (Standard Quantity)</option>
+          <option value="D">Option D (Digital Tokens)</option>
+        </select>
+
+        {formData.quantity.option && (
+          <div className="nested-fields">
+            <input
+              type="text"
+              name="quantity.value"
+              value={formData.quantity.value}
+              onChange={handleInputChange}
+              placeholder={`Format: ${formData.quantity.option === 'B' ? 'QUAL//TYPE/12345' : 'QUAL//TYPE/123456789'}`}
+            />
+            {errors['quantity.value'] && (
+              <span className="error">{errors['quantity.value']}</span>
+            )}
+          </div>
+        )}
       </div>
 
-      {/* Certificate Number (Optional) */}
+      {/* Party (95a) */}
       <div className="form-group">
-        <label>Certificate Number:</label>
-        <input type="text" name="certificateNumber" value={formData.certificateNumber} onChange={handleInputChange} />
-        {errors.certificateNumber && <span className="error">{errors.certificateNumber}</span>}
+        <label>Party (95a)</label>
+        <select
+          name="party.option"
+          value={formData.party.option}
+          onChange={handleInputChange}
+        >
+          <option value="">Select party option</option>
+          <option value="L">Option L (LEI)</option>
+          <option value="P">Option P (BIC)</option>
+          <option value="R">Option R (Proprietary)</option>
+        </select>
+
+        {formData.party.option && (
+          <div className="nested-fields">
+            <input
+              type="text"
+              name="party.identifier"
+              value={formData.party.identifier}
+              onChange={handleInputChange}
+              placeholder={formData.party.option === 'L' ? 'Enter LEI (20 characters)' : 'Enter BIC'}
+            />
+            {errors['party.identifier'] && (
+              <span className="error">{errors['party.identifier']}</span>
+            )}
+          </div>
+        )}
       </div>
 
-      {/* Party (Optional) */}
+      {/* Account (97a) */}
       <div className="form-group">
-        <label>Party:</label>
-        <input type="text" name="partyIdentifier" value={formData.partyIdentifier} onChange={handleInputChange} />
-        {errors.partyIdentifier && <span className="error">{errors.partyIdentifier}</span>}
+        <label>Account (97a) *</label>
+        <select
+          name="account.option"
+          value={formData.account.option}
+          onChange={handleInputChange}
+        >
+          <option value="">Select account option</option>
+          <option value="A">Option A (Account Number)</option>
+          <option value="B">Option B (Account Type)</option>
+          <option value="D">Option D (Blockchain)</option>
+          <option value="E">Option E (IBAN)</option>
+        </select>
+
+        {formData.account.option && (
+          <div className="nested-fields">
+            <input
+              type="text"
+              name="account.value"
+              value={formData.account.value}
+              onChange={handleInputChange}
+              placeholder={`Enter ${formData.account.option === 'E' ? 'IBAN' : 'account number'}`}
+            />
+            {errors['account.value'] && (
+              <span className="error">{errors['account.value']}</span>
+            )}
+          </div>
+        )}
       </div>
 
-      {/* Account (Mandatory) */}
+      {/* Place (94a) */}
       <div className="form-group">
-        <label>Account *:</label>
-        <input type="text" name="safekeepingAccountValue" value={formData.safekeepingAccountValue} onChange={handleInputChange} />
-        {errors.safekeepingAccountValue && <span className="error">{errors.safekeepingAccountValue}</span>}
-      </div>
+        <label>Place of Safekeeping (94a)</label>
+        <select
+          name="place.option"
+          value={formData.place.option}
+          onChange={handleInputChange}
+        >
+          <option value="">Select place option</option>
+          <option value="B">Option B (Place Code)</option>
+          <option value="C">Option C (Country Code)</option>
+          <option value="F">Option F (Identifier Code)</option>
+          <option value="L">Option L (LEI)</option>
+        </select>
 
-      {/* Narrative (Optional) */}
-      <div className="form-group">
-        <label>Narrative:</label>
-        <textarea name="denominationNarrative" value={formData.denominationNarrative} onChange={handleInputChange}></textarea>
-        {errors.denominationNarrative && <span className="error">{errors.denominationNarrative}</span>}
-      </div>
-
-      {/* Place of Safekeeping (Optional) */}
-      <div className="form-group">
-        <label>Place of Safekeeping:</label>
-        <input type="text" name="placeCode" value={formData.placeCode} onChange={handleInputChange} />
-        {errors.placeCode && <span className="error">{errors.placeCode}</span>}
+        {formData.place.option && (
+          <div className="nested-fields">
+            {formData.place.option === 'C' ? (
+              <input
+                type="text"
+                name="place.countryCode"
+                value={formData.place.countryCode}
+                onChange={handleInputChange}
+                maxLength={2}
+                placeholder="Enter country code (2 characters)"
+              />
+            ) : (
+              <input
+                type="text"
+                name="place.value"
+                value={formData.place.value}
+                onChange={handleInputChange}
+                placeholder={`Enter ${formData.place.option === 'L' ? 'LEI' : 'place code'}`}
+              />
+            )}
+            {errors['place.value'] && (
+              <span className="error">{errors['place.value']}</span>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
 };
 
-export default FinancialInstrumentAccountSection;
+export default FinancialInstrumentForm;

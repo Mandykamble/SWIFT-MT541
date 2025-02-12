@@ -4,8 +4,12 @@ import Navbar from './Navbar/Navbar'
 import TradeDetailsSection from './TradeDetails/TradeDetailsSection';
 import GeneralInformationSection from './GeneralInfo/GeneralInformationSection';
 import LinkagesSection from './Linkage/LinkagesSection';
+import FinancialInstrumentAttributes from './FIA/FinancialInstrumentAttributes';
 
 import FinancialInstrumentAccountSection from './FIAC/FinancialInstrumentAccountSection';
+import QuantityBreakdownForm from './FIAC/QuantityBreakdownForm'
+import TwoLegTransactionForm from  './TLT/TwoLegTransactionForm'
+
 
 const SwiftMT541Creator = () => {
   // State for form data
@@ -106,6 +110,7 @@ const SwiftMT541Creator = () => {
   const [showFinancialInstrumentAttributes, setShowFinancialInstrumentAttributes] = useState(false);
   const [showQuantityBreakdown, setShowQuantityBreakdown] = useState(false);
   const [showTwoLegTransaction, setShowTwoLegTransaction] = useState(false);
+  // const [showQuantityBreakdown, setshowQuantityBreakdown] = useState(false);
   const [showSettlementParties, setShowSettlementParties] = useState(false);
   const [showCashParties, setShowCashParties] = useState(false);
   const [showAmounts, setShowAmounts] = useState(false);
@@ -763,207 +768,36 @@ const handleDateTimeChange = (e) => {
 
   {/* {/->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */}
 
- <TradeDetailsSection></TradeDetailsSection>
+        <TradeDetailsSection></TradeDetailsSection>
 
         {/* Financial Instrument Attributes (Subsequence B1) */}
-        <div className="form-section">
-          <label>
-            <input
-              type="checkbox"
-              checked={showFinancialInstrumentAttributes}
-              onChange={() => setShowFinancialInstrumentAttributes(!showFinancialInstrumentAttributes)}
-            />
-            Include Financial Instrument Attributes
-          </label>
-          {showFinancialInstrumentAttributes && (
-            <div className="form-row">
-              <div className="form-group">
-                <label>Place of Listing:</label>
-                <input
-                  type="text"
-                  name="placeOfListing"
-                  value={formData.placeOfListing}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="form-group">
-                <label>Financial Instrument Indicator:</label>
-                <input
-                  type="text"
-                  name="financialInstrumentIndicator"
-                  value={formData.financialInstrumentIndicator}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="form-group">
-                <label>Type of Financial Instrument:</label>
-                <select
-                  name="typeOfFinancialInstrument"
-                  value={formData.typeOfFinancialInstrument}
-                  onChange={handleInputChange}
-                >
-                  <option value="">Select</option>
-                  <option value="A">A</option>
-                  <option value="B">B</option>
-                  <option value="C">C</option>
-                </select>
-              </div>
-              <div className="form-group">
-                <label>Currency of Denomination:</label>
-                <input
-                  type="text"
-                  name="currencyOfDenomination"
-                  value={formData.currencyOfDenomination}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="form-group">
-                <label>Financial Instrument Date:</label>
-                <input
-                  type="text"
-                  name="financialInstrumentDate"
-                  value={formData.financialInstrumentDate}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="form-group">
-                <label>Rate:</label>
-                <input
-                  type="text"
-                  name="rate"
-                  value={formData.rate}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="form-group">
-                <label>Certificate Number:</label>
-                <input
-                  type="text"
-                  name="certificateNumber"
-                  value={formData.certificateNumber}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="form-group">
-                <label>Flag:</label>
-                <input
-                  type="text"
-                  name="flag"
-                  value={formData.flag}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="form-group">
-                <label>Price:</label>
-                <select
-                  name="price"
-                  value={formData.price}
-                  onChange={handleInputChange}
-                >
-                  <option value="">Select</option>
-                  <option value="A">A</option>
-                  <option value="B">B</option>
-                </select>
-              </div>
-              <div className="form-group">
-                <label>Financial Instrument Quantity:</label>
-                <select
-                  name="financialInstrumentQuantity"
-                  value={formData.financialInstrumentQuantity}
-                  onChange={handleInputChange}
-                >
-                  <option value="">Select</option>
-                  <option value="B">B</option>
-                  <option value="D">D</option>
-                </select>
-              </div>
-              <div className="form-group">
-                <label>Financial Instrument Narrative:</label>
-                <input
-                  type="text"
-                  name="financialInstrumentNarrative"
-                  value={formData.financialInstrumentNarrative}
-                  onChange={handleInputChange}
-                />
-              </div>
-            </div>
-          )}
-        </div>
 
+        <FinancialInstrumentAttributes></FinancialInstrumentAttributes>
+        
         {/* Financial Instrument/Account (Sequence C) */}
         
         <FinancialInstrumentAccountSection></FinancialInstrumentAccountSection>
 
         {/* Quantity Breakdown (Subsequence C1) */}
+
         <div className="form-section">
           <label>
             <input
               type="checkbox"
               checked={showQuantityBreakdown}
               onChange={() => setShowQuantityBreakdown(!showQuantityBreakdown)}
+
+              
             />
-            Include Quantity Breakdown
+            Quantity Breakdown
           </label>
           {showQuantityBreakdown && (
-            <div className="form-row">
-              <div className="form-group">
-                <label>Lot Number:</label>
-                <input
-                  type="text"
-                  name="lotNumber"
-                  value={formData.lotNumber}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="form-group">
-                <label>Lot Quantity:</label>
-                <select
-                  name="lotQuantity"
-                  value={formData.lotQuantity}
-                  onChange={handleInputChange}
-                >
-                  <option value="">Select</option>
-                  <option value="B">B</option>
-                  <option value="D">D</option>
-                </select>
-              </div>
-              <div className="form-group">
-                <label>Lot Date/Time:</label>
-                <select
-                  name="lotDateTime"
-                  value={formData.lotDateTime}
-                  onChange={handleInputChange}
-                >
-                  <option value="">Select</option>
-                  <option value="A">A</option>
-                  <option value="C">C</option>
-                  <option value="E">E</option>
-                </select>
-              </div>
-              <div className="form-group">
-                <label>Lot Price:</label>
-                <select
-                  name="lotPrice"
-                  value={formData.lotPrice}
-                  onChange={handleInputChange}
-                >
-                  <option value="">Select</option>
-                  <option value="A">A</option>
-                  <option value="B">B</option>
-                </select>
-              </div>
-              <div className="form-group">
-                <label>Price Indicator:</label>
-                <input
-                  type="text"
-                  name="priceIndicator"
-                  value={formData.priceIndicator}
-                  onChange={handleInputChange}
-                />
-              </div>
-            </div>
+            <QuantityBreakdownForm></QuantityBreakdownForm>
           )}
         </div>
+        
+          
+
 
         {/* Two Leg Transaction Details (Sequence D) */}
         <div className="form-section">
@@ -972,82 +806,13 @@ const handleDateTimeChange = (e) => {
               type="checkbox"
               checked={showTwoLegTransaction}
               onChange={() => setShowTwoLegTransaction(!showTwoLegTransaction)}
+
+              
             />
             Include Two Leg Transaction Details
           </label>
           {showTwoLegTransaction && (
-            <div className="form-row">
-              <div className="form-group">
-                <label>Repo Date/Time:</label>
-                <select
-                  name="repoDateTime"
-                  value={formData.repoDateTime}
-                  onChange={handleInputChange}
-                >
-                  <option value="">Select</option>
-                  <option value="A">A</option>
-                  <option value="B">B</option>
-                  <option value="C">C</option>
-                </select>
-              </div>
-              <div className="form-group">
-                <label>Repo Indicator:</label>
-                <input
-                  type="text"
-                  name="repoIndicator"
-                  value={formData.repoIndicator}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="form-group">
-                <label>Repo Reference:</label>
-                <input
-                  type="text"
-                  name="repoReference"
-                  value={formData.repoReference}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="form-group">
-                <label>Repo Rate:</label>
-                <select
-                  name="repoRate"
-                  value={formData.repoRate}
-                  onChange={handleInputChange}
-                >
-                  <option value="">Select</option>
-                  <option value="A">A</option>
-                  <option value="C">C</option>
-                </select>
-              </div>
-              <div className="form-group">
-                <label>Repo Number Count:</label>
-                <input
-                  type="text"
-                  name="repoNumberCount"
-                  value={formData.repoNumberCount}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="form-group">
-                <label>Repo Amount:</label>
-                <input
-                  type="text"
-                  name="repoAmount"
-                  value={formData.repoAmount}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="form-group">
-                <label>Second Leg Narrative:</label>
-                <input
-                  type="text"
-                  name="secondLegNarrative"
-                  value={formData.secondLegNarrative}
-                  onChange={handleInputChange}
-                />
-              </div>
-            </div>
+            <TwoLegTransactionForm></TwoLegTransactionForm>
           )}
         </div>
 
