@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './SwiftForm.css';
 import Navbar from './Navbar/Navbar'
+import Sidebar from './Sidebar/Sidebar';
 import TradeDetailsSection from './TradeDetails/TradeDetailsSection';
 import GeneralInformationSection from './GeneralInfo/GeneralInformationSection';
 import LinkagesSection from './Linkage/LinkagesSection';
@@ -116,6 +117,9 @@ const SwiftMT541Creator = () => {
   const [showAmounts, setShowAmounts] = useState(false);
   const [showOtherParties, setShowOtherParties] = useState(false);
   const [dateTimeInput, setDateTimeInput] = useState('');
+
+  const [activeTab, setActiveTab] = useState('dashboard'); // State for active tab
+
   const qualifiers = {
     SETT: 'Current Settlement Instruction Number',
     TOSE: 'Total of Linked Settlement Instructions'
@@ -745,11 +749,15 @@ const handleDateTimeChange = (e) => {
     }
   };
 
+  const handleTabSelect = (tab) => {
+    setActiveTab(tab);
+  };
   return (
     <div>
 
-      <Navbar/>
-   
+      <div className="app-container">
+      
+      <Sidebar onSelectTab={handleTabSelect} className="sidebar" />
     <div className="swift-container">
       <h1>SWIFT MT541 Message Generator</h1>
       <form onSubmit={handleSubmit} className="swift-form">
@@ -1088,6 +1096,7 @@ const handleDateTimeChange = (e) => {
           <pre>{messageOutput}</pre>
         </div>
       )}
+    </div>
     </div>
     </div>
   );
