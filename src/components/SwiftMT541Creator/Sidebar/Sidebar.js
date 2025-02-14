@@ -1,31 +1,23 @@
-import React, { useState } from 'react';
-import './Sidebar.css'; // Import the CSS file for styling
+import React from 'react';
+import { Link } from 'react-router-dom'; // Import Link from React Router
+import './Sidebar.css';
 
 const Sidebar = ({ onSelectTab }) => {
-  const [activeTab, setActiveTab] = useState('dashboard'); // Default active tab
-
-  const handleTabClick = (tab) => {
-    setActiveTab(tab); // Update the active tab
-    onSelectTab(tab); // Notify the parent component about the selected tab
-  };
-
   return (
     <div className="sidebar">
       <div className="sidebar-header">
         <h2>Menu</h2>
       </div>
       <ul className="sidebar-menu">
-        <li
-          className={activeTab === 'dashboard' ? 'active' : ''}
-          onClick={() => handleTabClick('dashboard')}
-        >
-          Dashboard
+        <li>
+          <Link to="/dashboard" onClick={() => onSelectTab('dashboard') } className='txt'>
+            Dashboard
+          </Link>
         </li>
-        <li
-          className={activeTab === 'search' ? 'active' : ''}
-          onClick={() => handleTabClick('search')}
-        >
-          Search
+        <li>
+          <Link to="/search" onClick={() => onSelectTab('search')} className='txt'>
+            Search
+          </Link>
         </li>
       </ul>
     </div>
