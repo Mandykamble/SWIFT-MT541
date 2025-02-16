@@ -1,48 +1,113 @@
-/* Sidebar.css */
+/* Sidebar Styles */
 .sidebar {
-    width: 250px;
-    /* height: 378vh; */
-    background-color: #1e3a8a; /* Blue background */
-    color: white; /* White text */
-    padding: 20px;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-    height: cover;
+  width: 250px;
+  height: cover;
+  background: #f8f9fa; /* Light grey to contrast blue text */
+  border-right: 1px solid #ddd;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  padding-top: 20px;
+  font-family: "Arial", sans-serif;
+  /* position: fixed; */
+  left: 0;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  transition: 0.3s ease-in-out;
+}
+ 
+/* Sidebar Header */
+.sidebar-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 15px;
+  border-bottom: 2px solid #ddd;
+}
+ 
+.sidebar-logo {
+  width: 120px;
+  height: auto;
+  margin-bottom: 10px;
+}
+ 
+.sidebar-header span {
+  font-size: 18px;
+  font-weight: bold;
+  color: #e9f2fd;; /* Deep Blue */
+}
+ 
+/* Sidebar Menu */
+.sidebar-menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+ 
+/* Sidebar Menu Items */
+.sidebar-menu li {
+  padding: 10px 20px;
+}
+ 
+.sidebar-menu li a {
+  text-decoration: none;
+  color: #e9f2fd; /* Blue Font */
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  padding: 12px;
+  border-radius: 5px;
+  transition: 0.3s ease-in-out;
+}
+ 
+/* Sidebar Icons */
+.sidebar-menu li .icon {
+  margin-right: 10px;
+  font-size: 18px;
+  color: #e9f2fd; /* Blue Icons */
+}
+ 
+/* Hover Effect */
+.sidebar-menu li a:hover {
+  background: rgba(0, 74, 173, 0.1);
+  color: #004aad;
+}
+ 
+/* Active Item */
+.sidebar-menu .active {
+  background: #004aad;
+  color: #fff;
+  font-weight: bold;
+}
+ 
+/* Active Icon Color */
+.sidebar-menu .active .icon {
+  color: #fff;
+}
+ 
+/* Responsive Sidebar */
+@media (max-width: 768px) {
+  .sidebar {
+      width: 200px;
   }
-  
   .sidebar-header {
-    margin-bottom: 20px;
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: white;
+      font-size: 16px;
   }
-  
-  .sidebar-menu {
-    list-style: none;
-    padding: 0;
-    color: white;
+  .sidebar-menu li a {
+      font-size: 14px;
   }
-  
-  .sidebar-menu li {
-    padding: 10px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    text-decoration: none;
-    
-    
-
+}
+ 
+/* Adjusting Main Content */
+.main-content {
+  margin-left: 250px;
+  padding: 20px;
+  transition: 0.3s ease-in-out;
+}
+ 
+@media (max-width: 768px) {
+  .main-content {
+      margin-left: 200px;
   }
-
-  .txt{
-    color: white;
-    text-decoration: none;
-  }
-  
-  .sidebar-menu li:hover {
-    background-color: #3b82f6; /* Lighter blue on hover */
-    color: white;
-  }
-  
-  .sidebar-menu li.active {
-    background-color: #3b82f6; /* Lighter blue for active tab */
-    font-weight: bold;
-  }
+}

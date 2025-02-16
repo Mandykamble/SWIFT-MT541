@@ -38,8 +38,7 @@
 .form-group {
     flex: 1;
     display: flex;
-    flex-direction: row;
-    overflow-block: hidden;
+    flex-direction: column;
 }
  
 .form-group label {
@@ -73,6 +72,8 @@
  
 .search-results {
     margin-top: 20px;
+    
+
 }
  
 .table-container {
@@ -110,4 +111,64 @@
 .chart-container h2 {
     margin-bottom: 20px;
     color: #007bff;
+}
+
+/* Pagination styles */
+.pagination-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+}
+
+.pagination-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.pagination-button {
+    padding: 8px 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.pagination-button:hover:not(:disabled) {
+    background-color: #0056b3;
+}
+
+.pagination-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.page-info {
+    margin: 0 10px;
+    font-size: 14px;
+    color: #333;
+}
+
+.items-per-page {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.items-per-page label {
+    font-size: 14px;
+    color: #333;
+}
+
+.items-per-page select {
+    padding: 6px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
 }

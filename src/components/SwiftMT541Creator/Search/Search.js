@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import * as echarts from 'echarts';
-import './Search.css'; // Import the CSS file for styling
-import dummyData1 from './dummyData1'; // Import the dummy data
-import Sidebar from '../Sidebar/Sidebar'; // Import the Sidebar component
+import './Search.css';
+import dummyData1 from './dummyData1';
+import Sidebar from '../Sidebar/Sidebar';
+import Dashboard from './Dashboard';
 
 const Search = () => {
     // State for form fields
@@ -17,8 +18,11 @@ const Search = () => {
     const [receiverBIC, setReceiverBIC] = useState('');
     const [status, setStatus] = useState('');
     
-    // State for search results
+    // State for search results and pagination
     const [searchResults, setSearchResults] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(10);
+    const [totalPages, setTotalPages] = useState(1);
     
     // Ref for the chart container
     const chartRef = useRef(null);
@@ -26,20 +30,35 @@ const Search = () => {
     // Dummy data for testing
     const dummyData = dummyData1;
 
+    // Handle page change
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+    };
+
+    // Get current page data
+    const getCurrentPageData = () => {
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        return searchResults.slice(startIndex, endIndex);
+    };
+
     const handleSearch = () => {
         const results = dummyData.filter(
             (item) =>
                 (messageFormat === 'All - MT & MX' || item.messageFormat === messageFormat) &&
-                item.rfcRef.includes(rfcRef) &&
+                (messageRef === '' || item.messageRef.includes(messageRef)) &&
+                (rfcRef === '' || item.rfcRef.includes(rfcRef)) &&
                 (!startDate || item.startDate >= startDate) &&
                 (!endDate || item.endDate <= endDate) &&
                 (!messageType || item.messageType === messageType) &&
                 (!messageDirection || item.messageDirection === messageDirection) &&
-                item.senderBIC.includes(senderBIC) &&
-                item.receiverBIC.includes(receiverBIC) &&
+                (senderBIC === '' || item.senderBIC.includes(senderBIC)) &&
+                (receiverBIC === '' || item.receiverBIC.includes(receiverBIC)) &&
                 (!status || item.status === status)
         );
         setSearchResults(results);
+        setTotalPages(Math.ceil(results.length / itemsPerPage));
+        setCurrentPage(1);
         updateChart(results);
     };
 
@@ -80,8 +99,18 @@ const Search = () => {
 
     // Initialize the chart
     useEffect(() => {
-        updateChart(dummyData); // Initialize chart with full data
+        updateChart(dummyData);
+        setSearchResults(dummyData);
+        setTotalPages(Math.ceil(dummyData.length / itemsPerPage));
     }, []);
+
+    // Handle items per page change
+    const handleItemsPerPageChange = (e) => {
+        const newItemsPerPage = parseInt(e.target.value);
+        setItemsPerPage(newItemsPerPage);
+        setTotalPages(Math.ceil(searchResults.length / newItemsPerPage));
+        setCurrentPage(1);
+    };
 
     return (
         <div className="main-container">
@@ -190,12 +219,6 @@ const Search = () => {
                         </div>
                     </div>
 
-                    {/* Row 4 */}
-                    <div className="form-row">
-                        <div className="form-group"></div> {/* Empty for spacing */}
-                        <div className="form-group"></div> {/* Empty for spacing */}
-                    </div>
-
                     {/* Search Button */}
                     <button className="search-button" onClick={handleSearch}>
                         Search
@@ -222,7 +245,7 @@ const Search = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {searchResults.map((result, index) => (
+                                {getCurrentPageData().map((result, index) => (
                                     <tr key={index}>
                                         <td>{result.messageFormat}</td>
                                         <td>{result.messageRef}</td>
@@ -239,12 +262,65 @@ const Search = () => {
                             </tbody>
                         </table>
                     </div>
+
+                    {/* Pagination Controls */}
+                    <div className="pagination-container">
+                        <div className="pagination-controls">
+                            <button 
+                                onClick={() => handlePageChange(1)} 
+                                disabled={currentPage === 1}
+                                className="pagination-button"
+                            >
+                                First
+                            </button>
+                            <button 
+                                onClick={() => handlePageChange(currentPage - 1)} 
+                                disabled={currentPage === 1}
+                                className="pagination-button"
+                            >
+                                Previous
+                            </button>
+                            <span className="page-info">
+                                Page {currentPage} of {totalPages}
+                            </span>
+                            <button 
+                                onClick={() => handlePageChange(currentPage + 1)} 
+                                disabled={currentPage === totalPages}
+                                className="pagination-button"
+                            >
+                                Next
+                            </button>
+                            <button 
+                                onClick={() => handlePageChange(totalPages)} 
+                                disabled={currentPage === totalPages}
+                                className="pagination-button"
+                            >
+                                Last
+                            </button>
+                        </div>
+                        <div className="items-per-page">
+                            <label>Items per page:</label>
+                            <select 
+                                value={itemsPerPage} 
+                                onChange={handleItemsPerPageChange}
+                            >
+                                <option value="5">5</option>
+                                <option value="10">10</option>
+                                <option value="20">20</option>
+                                <option value="50">50</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Half Doughnut Chart */}
                 <div className="chart-container">
                     <h2>Transaction Distribution</h2>
                     <div ref={chartRef} style={{ width: '100%', height: '400px' }}></div>
+                </div>
+
+                <div>
+                <Dashboard data={searchResults} />
                 </div>
             </div>
         </div>
