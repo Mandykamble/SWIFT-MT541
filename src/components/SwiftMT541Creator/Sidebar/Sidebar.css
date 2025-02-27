@@ -1,113 +1,159 @@
+/* Sidebar Overlay for Mobile */
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  visibility: hidden;
+  z-index: 1000; /* Ensure overlay is below sidebar */
+  pointer-events: none; /* Allow clicking through the overlay */
+}
+
+.sidebar-overlay.show {
+  visibility: visible;
+}
+
 /* Sidebar Styles */
 .sidebar {
   width: 250px;
-  height: cover;
-  background: #f8f9fa; /* Light grey to contrast blue text */
-  border-right: 1px solid #ddd;
-  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  background: #ffffff;
   padding-top: 20px;
-  font-family: "Arial", sans-serif;
-  /* position: fixed; */
-  left: 0;
-  top: 0;
   display: flex;
   flex-direction: column;
+  height: 100vh;
+  position: fixed;
+  left: -250px;
+  top: 0;
   transition: 0.3s ease-in-out;
+  z-index: 1100; /* Ensure sidebar is above overlay */
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  pointer-events: auto; /* Ensure sidebar can receive clicks */
 }
- 
+
+.sidebar.open {
+  left: 0;
+}
+
 /* Sidebar Header */
 .sidebar-header {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 15px;
-  border-bottom: 2px solid #ddd;
+  justify-content: space-between;
+  color: #333;
+  border-bottom: 1px solid #e0e0e0;
 }
- 
+
 .sidebar-logo {
-  width: 120px;
+  width: 90px;
   height: auto;
-  margin-bottom: 10px;
 }
- 
-.sidebar-header span {
-  font-size: 18px;
-  font-weight: bold;
-  color: #e9f2fd;; /* Deep Blue */
+
+.sidebar-close {
+  cursor: pointer;
+  font-size: 20px;
+  color: #333;
 }
- 
+
 /* Sidebar Menu */
 .sidebar-menu {
   list-style: none;
   padding: 0;
   margin: 0;
 }
- 
-/* Sidebar Menu Items */
+
 .sidebar-menu li {
-  padding: 10px 20px;
+  padding: 10px 15px;
+  list-style: none;
 }
- 
+
 .sidebar-menu li a {
-  text-decoration: none;
-  color: #e9f2fd; /* Blue Font */
   display: flex;
   align-items: center;
+  text-decoration: none;
+  color: #333;
   font-size: 16px;
   padding: 12px;
   border-radius: 5px;
-  transition: 0.3s ease-in-out;
+  transition: 0.3s;
+  white-space: nowrap; /* Prevents text from wrapping */
+  overflow: hidden;
 }
- 
-/* Sidebar Icons */
-.sidebar-menu li .icon {
-  margin-right: 10px;
+
+.sidebar-menu li a .icon {
   font-size: 18px;
-  color: #e9f2fd; /* Blue Icons */
+  margin-right: 12px; /* Space between icon and text */
 }
- 
-/* Hover Effect */
-.sidebar-menu li a:hover {
-  background: rgba(0, 74, 173, 0.1);
-  color: #004aad;
+
+.sidebar-menu li a .menu-text {
+  flex-grow: 1;
 }
- 
-/* Active Item */
-.sidebar-menu .active {
-  background: #004aad;
-  color: #fff;
-  font-weight: bold;
+
+/* Dropdown */
+.dropdown-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 16px;
+  padding: 12px;
+  cursor: pointer;
+  color: #333;
 }
- 
-/* Active Icon Color */
-.sidebar-menu .active .icon {
-  color: #fff;
+
+.dropdown-title {
+  display: flex;
+  align-items: center;
 }
- 
+
+.dropdown-title .icon {
+  margin-right: 12px;
+}
+
+.dropdown-icon {
+  transition: transform 0.3s;
+  color: #333;
+}
+
+.dropdown-icon.open {
+  transform: rotate(180deg);
+}
+
+.dropdown-menu {
+  display: none;
+  background: #f5f5f5;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+.dropdown-menu.show {
+  display: block;
+}
+
+.dropdown-menu li {
+  padding: 8px 20px;
+}
+
+.dropdown-menu li a {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #333;
+  font-size: 14px;
+  padding: 8px;
+  border-radius: 5px;
+  transition: 0.3s;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.dropdown-menu li a .icon {
+  font-size: 16px;
+  margin-right: 10px;
+}
+
 /* Responsive Sidebar */
 @media (max-width: 768px) {
   .sidebar {
-      width: 200px;
-  }
-  .sidebar-header {
-      font-size: 16px;
-  }
-  .sidebar-menu li a {
-      font-size: 14px;
-  }
-}
- 
-/* Adjusting Main Content */
-.main-content {
-  margin-left: 250px;
-  padding: 20px;
-  transition: 0.3s ease-in-out;
-}
- 
-@media (max-width: 768px) {
-  .main-content {
-      margin-left: 200px;
+    width: 220px;
   }
 }

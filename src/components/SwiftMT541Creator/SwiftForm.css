@@ -1,17 +1,15 @@
-/* SwiftForm.css */
- 
 /* Global Styles */
 body {
   margin: 0;
   font-family: Arial, sans-serif;
 }
- 
+
 /* App Container */
 .app-container {
   display: flex;
   min-height: 100vh;
 }
- 
+
 /* Sidebar Styles */
 .sidebar {
   width: 250px;
@@ -20,99 +18,123 @@ body {
   padding: 20px;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
 }
- 
+
 .sidebar-header {
   margin-bottom: 20px;
   font-size: 1.5rem;
   font-weight: bold;
 }
- 
+
 .sidebar-menu {
   list-style: none;
   padding: 0;
 }
- 
+
 .sidebar-menu li {
   padding: 10px;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
- 
+
 .sidebar-menu li:hover {
-  background-color: #3b82f6; /* Lighter blue on hover */
+  background-color: #d1d3d6; /* Lighter blue on hover */
 }
- 
+
 .sidebar-menu li.active {
-  background-color: #3b82f6; /* Lighter blue for active tab */
+  background-color: #d2d4d7; /* Lighter blue for active tab */
   font-weight: bold;
 }
- 
+
 /* Main Content Styles */
 .main-content {
   flex: 1;
   padding: 20px;
   background-color: #f9fafb; /* Light background for main content */
   overflow-y: auto; /* Allow scrolling if content is long */
-  
 }
- 
+
 /* Swift Container */
 .swift-container {
-  max-width: 800px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 40px;
   font-family: Arial, sans-serif;
-  
 }
- 
+
 /* Swift Form */
 .swift-form {
   display: flex;
   flex-direction: column;
   gap: 20px;
-  background: #f5f5f5;
-  padding: 20px;
+  background: #fff;
+  padding: 40px;
   border-radius: 8px;
-  
 }
- 
-/* Form Group */
-.form-group {
-  display: flex;
-  flex-direction: row; /* Align children horizontally */
-   /* Vertically center align items */
-  gap: 10px; /* Add spacing between elements */
-  padding: 10px;
-}
- 
 
-.form-group label {
-  margin-bottom: 0; /* Remove bottom margin for horizontal alignment */
-  font-weight: bold;
-  color: #333;
-  min-width: 150px; /* Ensure labels have a consistent width */
+.headName {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
 }
- 
-.form-group input,
-.form-group select {
-  
+
+/* Initial Form */
+.initial-form {
+  min-width: 1100px;
+  margin: 0 auto;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Full Form */
+.full-form {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Form Grid Layout */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+}
+
+/* Field Container */
+.field-container {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Label */
+.field-container label {
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+/* Input and Select */
+.field-container input,
+.field-container select {
   padding: 8px;
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 14px;
-  flex: 1; /* Allow input/select to take remaining space */
+  width: 100%; /* Ensure all inputs and selects have the same width */
+  box-sizing: border-box; /* Include padding and border in the element's total width */
 }
- 
+
 /* Error Message */
-.error {
+.field-container .error {
   color: #dc3545;
   font-size: 12px;
   margin-top: 5px;
 }
- 
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}
+
 /* Generate Button */
 .generate-button {
-  grid-column: span 2;
   padding: 10px 20px;
   background-color: #007bff;
   color: white;
@@ -120,12 +142,13 @@ body {
   border-radius: 4px;
   cursor: pointer;
   font-size: 16px;
+  align-self: flex-start; /* Align button to the left */
 }
- 
+
 .generate-button:hover {
   background-color: #0056b3;
 }
- 
+
 /* Message Output */
 .message-output {
   margin-top: 20px;
@@ -134,7 +157,7 @@ body {
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
- 
+
 .message-output pre {
   white-space: pre-wrap;
   word-wrap: break-word;
@@ -143,70 +166,7 @@ body {
   border-radius: 4px;
   border: 1px solid #eee;
 }
- 
+
 .message-output h2 {
   color: #007bff;
-}
-
-
-/* Additional CSS to add to your existing SwiftForm.css */
-
-/* Form Grid Layout */
-.form-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.form-row {
-  display: flex;
-  gap: 20px;
-  width: 100%;
-}
-
-.field-container {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-width: 0; /* Allows the container to shrink if needed */
-  padding: 10px;
-}
-
-.field-container.full-width {
-  width: 100%;
-}
-
-/* Update label styles for vertical alignment */
-.field-container label {
-  font-weight: bold;
-  margin-bottom: 8px;
-  color: #333;
-}
-
-/* Input and select styles */
-.field-container input,
-.field-container select {
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
-  width: 100%;
-}
-
-/* Error message positioning */
-.field-container .error {
-  color: #dc3545;
-  font-size: 12px;
-  margin-top: 5px;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .form-row {
-    flex-direction: column;
-  }
-  
-  .field-container {
-    width: 100%;
-  }
 }

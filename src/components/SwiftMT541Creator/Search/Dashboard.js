@@ -1,4 +1,3 @@
-// Dashboard.jsx
 import React, { useEffect, useRef } from 'react';
 import * as echarts from 'echarts';
 
@@ -78,7 +77,6 @@ const Dashboard = ({ data }) => {
 
     window.addEventListener('resize', handleResize);
 
-    // Call resize immediately after initialization
     setTimeout(() => {
       handleResize();
     }, 0);
@@ -90,15 +88,13 @@ const Dashboard = ({ data }) => {
   }, [data]);
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6 min-h-[calc(100vh-3rem)]">
-      <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
-        Transaction Distribution
-      </h2>
+    <div className="dashboard-container">
+      <h1 className='headName'>Transaction Distribution</h1>
       <div 
         ref={chartRef} 
         style={{ 
           width: '100%',
-          height: '600px'
+          height: '500px'
         }}
       />
     </div>

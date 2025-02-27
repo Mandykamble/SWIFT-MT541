@@ -1,0 +1,88 @@
+.verify-container {
+    padding: 40px;
+}
+
+.table-container {
+    margin-top: 20px;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+}
+
+th {
+    background-color: #f4f4f4;
+}
+
+.verify-button {
+    padding: 5px 10px;
+    background-color: green;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.verify-button:hover {
+    background-color: darkgreen;
+}
+
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    width: 50%;
+    max-width: 600px;
+  }
+  
+  .view-button, .edit-button {
+    padding: 5px 10px;
+    margin: 2px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  .view-button {
+    background-color: blue;
+    color: white;
+  }
+  
+  .edit-button {
+    background-color: orange;
+    color: white;
+  }
+  
+  .view-button:hover {
+    background-color: darkblue;
+  }
+  
+  .edit-button:hover {
+    background-color: darkorange;
+  }
+
+  .headName{
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+  }
