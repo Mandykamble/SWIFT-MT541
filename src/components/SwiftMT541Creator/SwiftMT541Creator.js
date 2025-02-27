@@ -11,6 +11,7 @@ import FinancialInstrumentAccountSection from './FIAC/FinancialInstrumentAccount
 import QuantityBreakdownForm from './FIAC/QuantityBreakdownForm';
 import TwoLegTransactionForm from './TLT/TwoLegTransactionForm';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const SwiftMT541Creator = ({ initialData, onSave }) => {
   const navigate = useNavigate();
@@ -18,7 +19,12 @@ const SwiftMT541Creator = ({ initialData, onSave }) => {
   const [messageFormat, setMessageFormat] = useState(initialData?.messageFormat || '');
   const [messageSeries, setMessageSeries] = useState(initialData?.messageSeries || '');
   const [messageType, setMessageType] = useState(initialData?.messageType || '');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [formData, setFormData] = useState(initialData || {
+    messageFormat: '',
+    messageSeries: '',
+    messageType: '',
     senderReference: '',
     receiverReference: '',
     functionOfMessage: '',
@@ -220,6 +226,13 @@ const SwiftMT541Creator = ({ initialData, onSave }) => {
   const handleInitialSubmit = (e) => {
     e.preventDefault();
     if (messageFormat === 'MT' && messageSeries === '5' && messageType === '541') {
+      // Update formData with initial message format values
+      setFormData({
+        ...formData,
+        messageFormat,
+        messageSeries,
+        messageType
+      });
       setShowFullForm(true);
     }
   };
@@ -398,10 +411,62 @@ const SwiftMT541Creator = ({ initialData, onSave }) => {
     return swiftMessage;
   };
 
-  const handleSubmit = (e) => {
+  const saveToBackend = async (swiftData) => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const response = await axios.post('http://localhost:8081/api/swift/create', swiftData);
+      
+      if (response.status === 200 || response.status === 201) {
+        return response.data;
+      } else {
+        throw new Error('Failed to save SWIFT message to backend');
+      }
+    } catch (error) {
+      console.error('Error saving SWIFT message:', error);
+      setError(error.message || 'Failed to save to backend');
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const swiftMessage = generateSwiftMessage();
-    navigate('/mt541-output', { state: { swiftMessage } });
+    
+    try {
+      // Generate SWIFT message
+      const swiftMessage = generateSwiftMessage();
+      
+      // Create a comprehensive data object including all form data and the generated message
+      const swiftData = {
+        messageFormat: formData.messageFormat || messageFormat,
+        messageSeries: formData.messageSeries || messageSeries,
+        messageType: formData.messageType || messageType,
+        swiftMessage: swiftMessage,
+        formData: {
+          ...formData,
+          messageFormat: formData.messageFormat || messageFormat,
+          messageSeries: formData.messageSeries || messageSeries,
+          messageType: formData.messageType || messageType
+        }
+      };
+      
+      // Save to backend
+      await saveToBackend(swiftData);
+      
+      // Navigate to output page with the generated message
+      navigate('/mt541-output', { state: { swiftMessage, formData } });
+      
+      // If onSave callback is provided (e.g., for editing), call it
+      if (onSave) {
+        onSave(formData);
+      }
+    } catch (error) {
+      // Error is already set in saveToBackend function
+      console.error('Submission failed:', error);
+    }
   };
 
   return (
@@ -410,6 +475,8 @@ const SwiftMT541Creator = ({ initialData, onSave }) => {
         <Sidebar className="sidebar" />
         <div className="swift-container">
           <h1 className='headName'>SWIFT Message Generator</h1>
+
+          {error && <div className="error-message">{error}</div>}
 
           {!showFullForm ? (
             <form onSubmit={handleInitialSubmit} className="swift-form initial-form">
@@ -454,8 +521,8 @@ const SwiftMT541Creator = ({ initialData, onSave }) => {
                   </select>
                 </div>
               </div>
-              <button type="submit" className="generate-button">
-                Create
+              <button type="submit" className="generate-button" disabled={loading}>
+                {loading ? 'Creating...' : 'Create'}
               </button>
             </form>
           ) : (
@@ -469,8 +536,8 @@ const SwiftMT541Creator = ({ initialData, onSave }) => {
               <QuantityBreakdownForm formData={formData} setFormData={setFormData} />
               <TwoLegTransactionForm formData={formData} setFormData={setFormData} />
               <SettlementDetailsSection formData={formData} setFormData={setFormData} />
-              <button type="submit" className="generate-button">
-                {initialData ? 'Update' : 'Generate'}
+              <button type="submit" className="generate-button" disabled={loading}>
+                {loading ? 'Processing...' : initialData ? 'Update' : 'Generate & Save'}
               </button>
             </form>
           )}
