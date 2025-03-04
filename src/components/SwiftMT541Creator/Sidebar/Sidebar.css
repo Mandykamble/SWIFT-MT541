@@ -6,8 +6,8 @@
   width: 100%;
   height: 100%;
   visibility: hidden;
-  z-index: 1000; /* Ensure overlay is below sidebar */
-  pointer-events: none; /* Allow clicking through the overlay */
+  z-index: 1000;
+  pointer-events: none;
 }
 
 .sidebar-overlay.show {
@@ -23,16 +23,17 @@
   flex-direction: column;
   height: 100vh;
   position: fixed;
-  left: -250px;
+  left: 0;
   top: 0;
-  transition: 0.3s ease-in-out;
-  z-index: 1100; /* Ensure sidebar is above overlay */
+  transition: transform 0.3s ease-in-out;
+  z-index: 1100;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-  pointer-events: auto; /* Ensure sidebar can receive clicks */
+  pointer-events: auto;
 }
 
-.sidebar.open {
-  left: 0;
+/* Ensure the sidebar is off-screen when closed */
+.sidebar.closed {
+  transform: translateX(-100%);
 }
 
 /* Sidebar Header */
@@ -64,7 +65,6 @@
 
 .sidebar-menu li {
   padding: 10px 15px;
-  list-style: none;
 }
 
 .sidebar-menu li a {
@@ -76,13 +76,12 @@
   padding: 12px;
   border-radius: 5px;
   transition: 0.3s;
-  white-space: nowrap; /* Prevents text from wrapping */
-  overflow: hidden;
+  white-space: nowrap;
 }
 
 .sidebar-menu li a .icon {
   font-size: 18px;
-  margin-right: 12px; /* Space between icon and text */
+  margin-right: 12px;
 }
 
 .sidebar-menu li a .menu-text {
@@ -142,8 +141,6 @@
   padding: 8px;
   border-radius: 5px;
   transition: 0.3s;
-  white-space: nowrap;
-  overflow: hidden;
 }
 
 .dropdown-menu li a .icon {
@@ -154,6 +151,6 @@
 /* Responsive Sidebar */
 @media (max-width: 768px) {
   .sidebar {
-    width: 220px;
+      width: 220px;
   }
 }

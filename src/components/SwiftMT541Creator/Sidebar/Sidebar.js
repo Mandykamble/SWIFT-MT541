@@ -55,7 +55,7 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/" activeClassName="active">
+                <NavLink to="/createtransaction" activeClassName="active">
                   <FaPlusCircle className="icon" />
                   <span className="menu-text">Create Transaction</span>
                 </NavLink>
